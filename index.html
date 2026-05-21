@@ -1,18 +1,216 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nova Demo Bank</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#081225,#16396b);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+width:320px;
+background:rgba(255,255,255,0.1);
+padding:20px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+}
+
+button{
+background:#2f7df6;
+color:white;
+font-size:16px;
+}
+
+.balance{
+font-size:32px;
+text-align:center;
+margin:20px 0;
+}
+
+.hidden{
+display:none;
+}
+
+.history{
+margin-top:15px;
+max-height:120px;
+overflow:auto;
+background:rgba(0,0,0,0.2);
+padding:10px;
+border-radius:10px;
+}
+</style>
 </head>
-<body style="background:#081225;color:white;font-family:Arial;text-align:center;padding-top:100px;">
+
+<body>
+
+<div class="box" id="loginPage">
 
 <h1>Nova Demo Bank</h1>
 
-<input placeholder="Username"><br><br>
-<input placeholder="Password" type="password"><br><br>
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
 
-<button onclick="alert('Login Successful')">
-Login
-</button>
+<button onclick="login()">Login</button>
+<button onclick="showRegister()">Create Account</button>
+
+</div>
+
+<div class="box hidden" id="registerPage">
+
+<h2>Create Account</h2>
+
+<input id="newUser" placeholder="New Username">
+<input id="newPass" type="password" placeholder="New Password">
+
+<button onclick="createAccount()">Create</button>
+
+</div>
+
+<div class="box hidden" id="dashboard">
+
+<h2>Dashboard</h2>
+
+<p id="welcome"></p>
+
+<div class="balance">
+₹<span id="money">0</span>
+</div>
+
+<input id="depositAmount" type="number" placeholder="Deposit Amount">
+
+<button onclick="deposit()">Deposit</button>
+
+<input id="transferUser" placeholder="Receiver Username">
+<input id="transferAmount" type="number" placeholder="Transfer Amount">
+
+<button onclick="transfer()">Transfer Money</button>
+
+<button onclick="logout()">Logout</button>
+
+<div class="history" id="history">
+Transaction History
+</div>
+
+</div>
+
+<script>
+
+let balance = 0;
+
+function showRegister(){
+document.getElementById("loginPage").classList.add("hidden");
+document.getElementById("registerPage").classList.remove("hidden");
+}
+
+function createAccount(){
+
+let user=document.getElementById("newUser").value;
+let pass=document.getElementById("newPass").value;
+
+localStorage.setItem("user",user);
+localStorage.setItem("pass",pass);
+
+alert("Account Created");
+
+document.getElementById("registerPage").classList.add("hidden");
+document.getElementById("loginPage").classList.remove("hidden");
+}
+
+function login(){
+
+let user=document.getElementById("loginUser").value;
+let pass=document.getElementById("loginPass").value;
+
+if(user==="admin" && pass==="admin123"){
+alert("Admin Login Success");
+return;
+}
+
+if(
+user===localStorage.getItem("user") &&
+pass===localStorage.getItem("pass")
+){
+
+document.getElementById("loginPage").classList.add("hidden");
+document.getElementById("dashboard").classList.remove("hidden");
+
+document.getElementById("welcome").innerHTML=
+"Welcome, "+user;
+
+}
+else{
+alert("Wrong Username or Password");
+}
+}
+
+function deposit(){
+
+let amt=Number(document.getElementById("depositAmount").value);
+
+balance+=amt;
+
+document.getElementById("money").innerHTML=balance;
+
+addHistory("Deposited ₹"+amt);
+
+}
+
+function transfer(){
+
+let user=document.getElementById("transferUser").value;
+
+let amt=Number(document.getElementById("transferAmount").value);
+
+if(amt>balance){
+alert("Insufficient Balance");
+return;
+}
+
+balance-=amt;
+
+document.getElementById("money").innerHTML=balance;
+
+addHistory("Transferred ₹"+amt+" to "+user);
+
+alert("Transfer Successful");
+
+}
+
+function addHistory(text){
+
+let history=document.getElementById("history");
+
+history.innerHTML += "<br>"+text;
+
+}
+
+function logout(){
+
+document.getElementById("dashboard").classList.add("hidden");
+
+document.getElementById("loginPage").classList.remove("hidden");
+
+}
+
+</script>
 
 </body>
 </html>
